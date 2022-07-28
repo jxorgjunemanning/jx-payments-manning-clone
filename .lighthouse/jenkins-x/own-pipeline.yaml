@@ -2,11 +2,11 @@ apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   creationTimestamp: null
-  name: pullrequest
+  name: own-pipeline
 spec:
   pipelineSpec:
     tasks:
-    - name: from-build-pack
+    - name: own-pipeline
       resources: {}
       taskSpec:
         metadata: {}
@@ -14,7 +14,6 @@ spec:
           image: uses:jenkins-x/jx3-pipeline-catalog/tasks/python/pullrequest.yaml@versionStream
           name: ""
           resources:
-            # override limits for all containers here
             limits: {}
           workingDir: /workspace/source
         steps:
@@ -23,15 +22,13 @@ spec:
           resources: {}
         - name: jx-variables
           resources:
-            # override requests for the pod here
             requests:
               cpu: 400m
               memory: 512Mi
-        - name: build-python-env
+        - name: python-test
           script: |
             pip install -r requirements.txt
-        - name: build-python-unittest
-          resources: {}
+            python ./manage.py test
         - name: check-registry
           resources: {}
         - name: build-container-build
