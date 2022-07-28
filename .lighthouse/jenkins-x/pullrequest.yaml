@@ -27,6 +27,9 @@ spec:
             requests:
               cpu: 400m
               memory: 512Mi
+        - name: build-python-env
+          script: |
+            pip install -r requirements.txt
         - name: build-python-unittest
           resources: {}
         - name: check-registry
