@@ -1,0 +1,41 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  creationTimestamp: null
+  name: own-pipeline
+spec:
+  pipelineSpec:
+    tasks:
+    - name: own-pipeline
+      resources: {}
+      taskSpec:
+        metadata: {}
+        stepTemplate:
+          image: uses:jenkins-x/jx3-pipeline-catalog/tasks/python/pullrequest.yaml@versionStream
+          name: ""
+          resources:
+            limits: {}
+          workingDir: /workspace/source
+        steps:
+        - image: uses:jenkins-x/jx3-pipeline-catalog/tasks/git-clone/git-clone-pr.yaml@versionStream
+          name: ""
+          resources: {}
+        - name: jx-variables
+          resources:
+            requests:
+              cpu: 400m
+              memory: 512Mi
+        - name: python-test
+          script: |
+            pip install -r requirements.txt
+            python ./manage.py test
+        - name: check-registry
+          resources: {}
+        - name: build-container-build
+          resources: {}
+        - name: promote-jx-preview
+          resources: {}
+  podTemplate: {}
+  serviceAccountName: tekton-bot
+  timeout: 12h0m0s
+status: {}
